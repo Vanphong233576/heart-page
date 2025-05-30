@@ -1,50 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Trái Tim Chuyển Động</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chúc mừng sinh nhật!</title>
   <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #000;
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+      color: white;
+      font-family: 'Arial', sans-serif;
     }
-    .heart {
-      width: 100px;
-      height: 90px;
-      position: relative;
-      transform: rotate(-45deg);
-      animation: pulse 1s infinite;
-    }
-    .heart::before,
-    .heart::after {
-      content: "";
+
+    .message {
       position: absolute;
+      top: 8%;
+      width: 100%;
+      text-align: center;
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ffccff;
+      text-shadow: 0 0 10px white, 0 0 20px #ff66cc;
+      animation: rotateText 5s infinite linear;
+      transform-origin: center;
+      perspective: 1000px;
+    }
+
+    @keyframes rotateText {
+      0%   { transform: rotateY(-20deg); }
+      50%  { transform: rotateY(20deg); }
+      100% { transform: rotateY(-20deg); }
+    }
+
+    .heart {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.8); /* TO LỚN HƠN */
       width: 100px;
       height: 90px;
       background: red;
-      border-radius: 50%;
-    }
-    .heart::before {
-      top: -50px;
-      left: 0;
-    }
-    .heart::after {
-      top: 0;
-      right: -50px;
+      animation: beat 1s infinite;
+      clip-path: polygon(
+        50% 0%,
+        61% 12%,
+        78% 12%,
+        100% 35%,
+        100% 62%,
+        50% 100%,
+        0% 62%,
+        0% 35%,
+        22% 12%,
+        39% 12%
+      );
+      box-shadow: 0 0 30px red, 0 0 60px red;
     }
 
-    @keyframes pulse {
-      0% { transform: rotate(-45deg) scale(1); }
-      50% { transform: rotate(-45deg) scale(1.2); }
-      100% { transform: rotate(-45deg) scale(1); }
+    @keyframes beat {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1.8);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(2.1);
+      }
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>
 <body>
+  <div class="message">Chúc em Phong sinh nhật vui vẻ!</div>
   <div class="heart"></div>
+  <canvas id="fireworks"></canvas>
+
+  <script>
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    });
+
+    const fireworks = [];
+
+    function random(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function Firework() {
+      this.x = random(0, w);
+      this.y = h;
+      this.tx = random(w * 0.2, w * 0.8);
+      this.ty = random(h * 0.1, h * 0.5);
+      this.distance = Math.sqrt((this.tx - this.x) ** 2 + (this.ty - this.y) ** 2);
+      this.angle = Math.atan2(this.ty - this.y, this.tx - this.x);
+      this.speed = 5;
+      this.brightness = random(50, 80);
+      this.exploded = false;
+      this.particles = [];
+    }
+
+    Firework.prototype.update = function () {
+      if (!this.exploded) {
+        let vx = Math.cos(this.angle) * this.speed;
+        let vy = Math.sin(this.angle) * this.speed;
+        this.x += vx;
+        this.y += vy;
+
+        if (Math.sqrt((this.tx - this.x) ** 2 + (this.ty - this.y) ** 2) < 10) {
+          this.exploded = true;
+          for (let i = 0; i < 50; i++) {
+            this.particles.push(new Particle(this.tx, this.ty));
+          }
+        }
+      } else {
+        this.particles.forEach(p => p.update());
+        this.particles = this.particles.filter(p => p.alpha > 0);
+      }
+    }
+
+    Firework.prototype.draw = function () {
+      if (!this.exploded) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${this.brightness}, 100%, 50%)`;
+        ctx.fill();
+      } else {
+        this.particles.forEach(p => p.draw());
+      }
+    }
+
+    function Particle(x, y) {
+      this.x = x;
+      this.y = y;
+      this.angle = random(0, Math.PI * 2);
+      this.speed = random(1, 6);
+      this.alpha = 1;
+      this.gravity = 0.05;
+      this.brightness = random(50, 80);
+    }
+
+    Particle.prototype.update = function () {
+      this.x += Math.cos(this.angle) * this.speed;
+      this.y += Math.sin(this.angle) * this.speed + this.gravity;
+      this.alpha -= 0.01;
+    }
+
+    Particle.prototype.draw = function () {
+      ctx.globalAlpha = this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `hsl(${this.brightness}, 100%, 50%)`;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, w, h);
+
+      if (Math.random() < 0.05) {
+        fireworks.push(new Firework());
+      }
+
+      fireworks.forEach(f => {
+        f.update();
+        f.draw();
+      });
+
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        if (fireworks[i].exploded && fireworks[i].particles.length === 0) {
+          fireworks.splice(i, 1);
+        }
+      }
+    }
+
+    animate();
+  </script>
 </body>
 </html>
