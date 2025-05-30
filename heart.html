@@ -2,7 +2,6 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chúc mừng sinh nhật!</title>
   <style>
     html, body {
@@ -12,9 +11,10 @@
       overflow: hidden;
       background: black;
       color: white;
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
     }
 
+    /* Dòng chữ nhảy từng chữ bay lên */
     .message {
       position: absolute;
       top: 8%;
@@ -24,22 +24,35 @@
       font-weight: bold;
       color: #ffccff;
       text-shadow: 0 0 10px white, 0 0 20px #ff66cc;
-      animation: rotateText 5s infinite linear;
-      transform-origin: center;
-      perspective: 1000px;
+      user-select: none;
+    }
+    .message span {
+      display: inline-block;
+      animation: jumpUp 1.5s forwards;
+      animation-timing-function: ease-out;
+      opacity: 1;
+    }
+    @keyframes jumpUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-60px) scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) scale(1);
+        opacity: 0;
+      }
     }
 
-    @keyframes rotateText {
-      0%   { transform: rotateY(-20deg); }
-      50%  { transform: rotateY(20deg); }
-      100% { transform: rotateY(-20deg); }
-    }
-
+    /* Trái tim lớn đập */
     .heart {
       position: absolute;
-      top: 45%;
+      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(1.8);
+      transform: translate(-50%, -50%) scale(2);
       width: 100px;
       height: 90px;
       background: red;
@@ -57,30 +70,50 @@
         39% 12%
       );
       box-shadow: 0 0 30px red, 0 0 60px red;
+      user-select: none;
     }
-
     @keyframes beat {
       0%, 100% {
-        transform: translate(-50%, -50%) scale(1.8);
+        transform: translate(-50%, -50%) scale(2);
       }
       50% {
-        transform: translate(-50%, -50%) scale(2.1);
+        transform: translate(-50%, -50%) scale(2.3);
       }
     }
 
+    /* Canvas pháo hoa */
     canvas {
       position: absolute;
       top: 0;
       left: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div class="message">Chúc em Phong sinh nhật vui vẻ!</div>
+  <div class="message" id="message"></div>
   <div class="heart"></div>
   <canvas id="fireworks"></canvas>
 
+  <!-- Nhạc nền Happy Birthday -->
+  <audio autoplay loop>
+    <source src="music/happy_birthday.mp3" type="audio/mpeg" />
+    Trình duyệt của bạn không hỗ trợ thẻ audio.
+  </audio>
+
   <script>
+    // Tạo hiệu ứng chữ nhảy từng chữ bay lên
+    const text = "Chúc em Phong sinh nhật vui vẻ!";
+    const container = document.getElementById('message');
+
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.textContent = text[i];
+      span.style.animationDelay = (i * 0.2) + 's';  // Delay từng chữ
+      container.appendChild(span);
+    }
+
+    // Setup canvas pháo hoa
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     let w = canvas.width = window.innerWidth;
