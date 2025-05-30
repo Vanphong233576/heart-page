@@ -12,8 +12,8 @@
       font-family: 'Arial', sans-serif;
       color: white;
       text-align: center;
+      user-select: none;
     }
-
     .heart {
       position: absolute;
       top: 50%;
@@ -25,8 +25,8 @@
       transform: rotate(-45deg);
       animation: beat 1s infinite;
       box-shadow: 0 0 20px red;
+      z-index: 10;
     }
-
     .heart::before,
     .heart::after {
       content: "";
@@ -36,17 +36,14 @@
       background: red;
       border-radius: 50%;
     }
-
     .heart::before {
       top: -100px;
       left: 0;
     }
-
     .heart::after {
       left: 100px;
       top: 0;
     }
-
     @keyframes beat {
       0%, 100% {
         transform: scale(1) rotate(-45deg);
@@ -55,7 +52,6 @@
         transform: scale(1.2) rotate(-45deg);
       }
     }
-
     .message {
       position: absolute;
       top: 70%;
@@ -64,27 +60,39 @@
       font-size: 2rem;
       white-space: nowrap;
       pointer-events: none;
+      z-index: 10;
     }
-
     .letter {
       display: inline-block;
       opacity: 0;
       transform-style: preserve-3d;
       animation-fill-mode: forwards;
     }
-
     @keyframes jump {
       0% { opacity: 0; transform: rotateY(0deg) translateY(0); }
       50% { opacity: 1; transform: rotateY(180deg) translateY(-30px); }
       100% { opacity: 1; transform: rotateY(0deg) translateY(0); }
     }
-
     canvas {
       position: fixed;
       top: 0;
       left: 0;
       pointer-events: none;
-      z-index: 0;
+      z-index: 1;
+    }
+    #btnPlayAudio {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 0, 0, 0.8);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 20;
+      user-select: none;
     }
   </style>
 </head>
@@ -94,8 +102,15 @@
   <div class="heart"></div>
   <div class="message" id="message"></div>
 
+  <audio id="birthdayAudio" autoplay loop muted>
+    <source src="happy.mp3" type="audio/mpeg" />
+    Trình duyệt của bạn không hỗ trợ phát nhạc.
+  </audio>
+
+  <button id="btnPlayAudio">Bật nhạc</button>
+
   <script>
-    // Dòng chữ từng chữ một
+    // Animate text
     const msgText = "Chúc em Phong sinh nhật vui vẻ!";
     const messageEl = document.getElementById("message");
 
@@ -120,10 +135,8 @@
 
     animateText();
     setInterval(animateText, msgText.length * 200 + 6000);
-  </script>
 
-  <script>
-    // Firework effect
+    // Fireworks
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let W = window.innerWidth;
@@ -191,11 +204,28 @@
       canvas.width = W;
       canvas.height = H;
     });
-  </script>
 
-  <audio id="birthdayAudio" autoplay loop>
-    <source src="happy.mp3" type="audio/mpeg" />
-    Trình duyệt của bạn không hỗ trợ phát nhạc.
-  </audio>
+    // Audio control
+    const audio = document.getElementById('birthdayAudio');
+    const btnPlayAudio = document.getElementById('btnPlayAudio');
+
+    // Khi người dùng click bất kỳ đâu trang, bật âm thanh
+    document.body.addEventListener('click', () => {
+      if(audio.muted) {
+        audio.muted = false;
+        audio.play();
+        btnPlayAudio.style.display = 'none';
+      }
+    }, { once: true });
+
+    // Nút bật nhạc thủ công
+    btnPlayAudio.addEventListener('click', () => {
+      if(audio.muted) {
+        audio.muted = false;
+        audio.play();
+        btnPlayAudio.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
