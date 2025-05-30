@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Heart & Birthday Wishes</title>
+<title>Chúc mừng sinh nhật</title>
 <style>
   body, html {
     margin: 0; padding: 0; height: 100%;
@@ -13,25 +13,23 @@
     color: white;
     user-select: none;
   }
-  #heart-container {
+  #heart {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 150px;
+    font-size: 160px;
     color: #ff2e63;
     animation: heartbeat 1.5s ease-in-out infinite;
-    z-index: 10;
     text-shadow: 0 0 15px #ff2e63;
+    z-index: 10;
   }
   @keyframes heartbeat {
     0%, 100% {
       transform: translate(-50%, -50%) scale(1);
-      /* Không thay đổi opacity */
     }
     50% {
       transform: translate(-50%, -50%) scale(1.2);
-      /* Không thay đổi opacity */
     }
   }
   #message {
@@ -69,13 +67,13 @@
 </head>
 <body>
 
-<div id="heart-container">❤️</div>
+<div id="heart">❤️</div>
 <div id="message"></div>
 <canvas id="fireworks"></canvas>
 <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/02/17/audio_960b932324.mp3?filename=happy-birthday-6152.mp3" autoplay loop></audio>
 
 <script>
-// Text animation - jump each letter sequentially every 5 seconds
+// Text animation - jump each letter sequentially every 6 seconds
 const msgText = "Chúc em Phong sinh nhật vui vẻ!";
 const messageEl = document.getElementById("message");
 
@@ -108,7 +106,6 @@ let cw, ch;
 let fireworks = [];
 let particles = [];
 let lastTime = 0;
-let deltaTime;
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
@@ -200,8 +197,6 @@ class Particle {
 }
 
 function loop(t=0) {
-  deltaTime = t - lastTime;
-  lastTime = t;
   ctx.clearRect(0, 0, cw, ch);
 
   if (Math.random() < 0.03) {
