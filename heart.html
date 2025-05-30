@@ -27,6 +27,7 @@
       user-select: none;
       opacity: 1;
       transition: opacity 0.5s ease;
+      pointer-events: none;
     }
     .message span {
       display: inline-block;
@@ -51,37 +52,29 @@
       }
     }
 
-    /* Trái tim lớn đập */
+    /* SVG Trái tim to đập */
     .heart {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(2);
-      width: 100px;
-      height: 90px;
-      background: red;
-      animation: beat 1s infinite;
-      clip-path: polygon(
-        50% 0%,
-        61% 12%,
-        78% 12%,
-        100% 35%,
-        100% 62%,
-        50% 100%,
-        0% 62%,
-        0% 35%,
-        22% 12%,
-        39% 12%
-      );
-      box-shadow: 0 0 30px red, 0 0 60px red;
+      transform: translate(-50%, -50%) scale(3);
       user-select: none;
+      pointer-events: none;
+      filter: drop-shadow(0 0 10px red);
+      animation: beat 1s infinite;
+      transform-origin: center;
+      width: 128px;
+      height: 118px;
     }
+
     @keyframes beat {
       0%, 100% {
-        transform: translate(-50%, -50%) scale(2);
+        transform: translate(-50%, -50%) scale(3);
+        filter: drop-shadow(0 0 10px red);
       }
       50% {
-        transform: translate(-50%, -50%) scale(2.3);
+        transform: translate(-50%, -50%) scale(3.3);
+        filter: drop-shadow(0 0 20px red);
       }
     }
 
@@ -91,12 +84,19 @@
       top: 0;
       left: 0;
       pointer-events: none;
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
   <div class="message" id="message"></div>
-  <div class="heart"></div>
+
+  <svg class="heart" viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg">
+    <path fill="red" d="M23.6,0c-2.9,0-5.4,2.1-6.6,5.1C15.8,2.1,13.3,0,10.4,0C4.7,0,0,4.7,0,10.4c0,7.2,9.3,13.7,16,19.2
+      c6.7-5.5,16-12,16-19.2C32,4.7,27.3,0,23.6,0z"/>
+  </svg>
+
   <canvas id="fireworks"></canvas>
 
   <!-- Nhạc nền Happy Birthday -->
@@ -110,7 +110,7 @@
     const container = document.getElementById('message');
 
     function runAnimation() {
-      container.innerHTML = ''; // Xóa cũ
+      container.innerHTML = '';
       for (let i = 0; i < text.length; i++) {
         const span = document.createElement('span');
         span.textContent = text[i];
@@ -119,19 +119,17 @@
       }
     }
 
-    // Chạy lần đầu
     runAnimation();
 
-    // Lặp lại animation mỗi 8 giây (1.5s animation + ~5s giữ + 1.5s ẩn/chờ)
     setInterval(() => {
-      container.style.opacity = '0'; // Ẩn chữ
+      container.style.opacity = '0';
       setTimeout(() => {
-        runAnimation();               // Tạo lại chữ với animation
-        container.style.opacity = '1';// Hiện chữ
-      }, 500); // ẩn 0.5s trước khi chạy lại
+        runAnimation();
+        container.style.opacity = '1';
+      }, 500);
     }, 8000);
 
-    // Setup canvas pháo hoa
+    // Pháo hoa canvas setup
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     let w = canvas.width = window.innerWidth;
